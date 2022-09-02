@@ -5,7 +5,6 @@
 
 //Variables
 let grid = 0;
-let edge = 0;
 let zombieList = {};
 let creatureList = {};
 let movements = "";
@@ -21,8 +20,7 @@ const stepLen = 0;
  */
 function initalize(userInput) {
     grid = userInput.gridSize;
-    edge = grid - 1;
-    console.log("Grid:",grid )
+    console.log("Grid:",grid );
     movements = userInput.commands;
     zombieList[0] = {"position":userInput.zombie, "movement":movements};
     for (let creature = 0; creature< userInput.creatures.length; creature++){
@@ -60,38 +58,14 @@ function zombieMove(zombies, creatures, movement) {
         }      
     }
 
-}
-
+};
 
 const axisChange = {
-    "R": function shift(zombie){
-        if (zombie.position.x === edge) {
-            zombie.position.x = 0;
-        }else{
-            zombie.position.x += 1;
-        }
-    }, 
-    "U": function shift(zombie){
-        if (zombie.position.y === 0){
-            zombie.position.y = edge;
-        }else{
-            zombie.position.y -= 1;
-        }
-    }, 
-    "D": function shift(zombie){
-        if (zombie.position.y === edge){
-            zombie.position.y = 0;
-        }else{
-            zombie.position.y += 1;
-        }
-    }, 
-    "L": function shift(zombie){
-        if (zombie.position.x === 0) {
-            zombie.position.x = edge;
-        }else{
-            zombie.position.x -= 1;
-        }
-    }}
+    "R": [1,0], 
+    "U": [0,-1], 
+    "D": [0,1], 
+    "L": [-1,0]
+};
 
 /**
  * Zombie's movement control
@@ -100,8 +74,19 @@ const axisChange = {
  * @param {obj} zombie the relative zombie that moves 
  */
 function move(direction, zombie) {
-    axisChange[direction](zombie);
-}
+    let newAxis = [zombie.position.x + axisChange[direction][0], zombie.position.y + axisChange[direction][1]]
+
+    for (let index = 0; index < newAxis.length; index++) {
+        if(newAxis[index] === grid) {
+            newAxis[index] = 0;
+        }else if (newAxis[index] === -1){
+            newAxis[index] = grid - 1;
+        }
+    };
+
+    zombie.position.x = newAxis[0];
+    zombie.position.y = newAxis[1];
+};
 
 /**
  * Infection when zombie move on the creature's spot
